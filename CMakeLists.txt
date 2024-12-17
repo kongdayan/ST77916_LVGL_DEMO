@@ -1,7 +1,6 @@
-SET(SOURCES screens/ui_Home.c
+SET(SOURCES ui_Screen1.c
     ui.c
-    components/ui_comp_hook.c
-    ui_helpers.c
-    fonts/ui_font_Number.c)
+    ui_comp_hook.c
+    ui_helpers.c)
 
 add_library(ui ${SOURCES})
