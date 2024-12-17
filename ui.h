@@ -62,9 +62,28 @@ extern lv_obj_t * ui_Switch3;
 extern lv_obj_t * ui_Label10;
 // CUSTOM VARIABLES
 
+// SCREEN: ui_Screen3
+void ui_Screen3_screen_init(void);
+void ui_event_Screen3(lv_event_t * e);
+extern lv_obj_t * ui_Screen3;
+extern lv_obj_t * ui_Image1;
+// CUSTOM VARIABLES
+extern lv_obj_t * uic_Screen3;
+
+// SCREEN: ui_Screen4
+void ui_Screen4_screen_init(void);
+void ui_event_Screen4(lv_event_t * e);
+extern lv_obj_t * ui_Screen4;
+extern lv_obj_t * ui_Label11;
+extern lv_obj_t * ui_Label12;
+// CUSTOM VARIABLES
+
 // EVENTS
 
 extern lv_obj_t * ui____initial_actions0;
+
+// IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_1539399133);    // assets/cyberpunk-h.png
 
 // UI INIT
 void ui_init(void);
