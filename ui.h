@@ -27,11 +27,39 @@ extern "C" {
 
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);
+void ui_event_Screen1(lv_event_t * e);
 extern lv_obj_t * ui_Screen1;
+void ui_event_Button1(lv_event_t * e);
+extern lv_obj_t * ui_Button1;
+void ui_event_Button2(lv_event_t * e);
+extern lv_obj_t * ui_Button2;
 extern lv_obj_t * ui_Arc1;
-extern lv_obj_t * ui_Checkbox1;
-extern lv_obj_t * ui_Slider1;
-extern lv_obj_t * ui_Switch1;
+extern lv_obj_t * ui_Label2;
+extern lv_obj_t * ui_Label3;
+extern lv_obj_t * ui_Arc2;
+extern lv_obj_t * ui_Arc3;
+// CUSTOM VARIABLES
+extern lv_obj_t * uic_Arc1;
+extern lv_obj_t * uic_Arc2;
+extern lv_obj_t * uic_Arc3;
+
+// SCREEN: ui_Screen2
+void ui_Screen2_screen_init(void);
+void ui_event_Screen2(lv_event_t * e);
+extern lv_obj_t * ui_Screen2;
+extern lv_obj_t * ui_TabView2;
+extern lv_obj_t * ui_TabPage1;
+extern lv_obj_t * ui_Spinner3;
+extern lv_obj_t * ui_TabPage2;
+extern lv_obj_t * ui_Calendar3;
+extern lv_obj_t * ui_TabPage3;
+extern lv_obj_t * ui_Slider4;
+extern lv_obj_t * ui_Checkbox2;
+extern lv_obj_t * ui_Switch2;
+extern lv_obj_t * ui_Label8;
+extern lv_obj_t * ui_Label9;
+extern lv_obj_t * ui_Switch3;
+extern lv_obj_t * ui_Label10;
 // CUSTOM VARIABLES
 
 // EVENTS

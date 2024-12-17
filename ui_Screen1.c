@@ -10,40 +10,72 @@ void ui_Screen1_screen_init(void)
     ui_Screen1 = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    ui_Button1 = lv_btn_create(ui_Screen1);
+    lv_obj_set_width(ui_Button1, 50);
+    lv_obj_set_height(ui_Button1, 50);
+    lv_obj_set_x(ui_Button1, -100);
+    lv_obj_set_y(ui_Button1, -100);
+    lv_obj_set_align(ui_Button1, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_Button1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_Button2 = lv_btn_create(ui_Screen1);
+    lv_obj_set_width(ui_Button2, 50);
+    lv_obj_set_height(ui_Button2, 50);
+    lv_obj_set_x(ui_Button2, 100);
+    lv_obj_set_y(ui_Button2, -100);
+    lv_obj_set_align(ui_Button2, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Button2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_clear_flag(ui_Button2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
     ui_Arc1 = lv_arc_create(ui_Screen1);
-    lv_obj_set_width(ui_Arc1, 150);
-    lv_obj_set_height(ui_Arc1, 150);
-    lv_obj_set_x(ui_Arc1, 4);
-    lv_obj_set_y(ui_Arc1, -32);
+    lv_obj_set_width(ui_Arc1, 50);
+    lv_obj_set_height(ui_Arc1, 50);
     lv_obj_set_align(ui_Arc1, LV_ALIGN_CENTER);
     lv_arc_set_value(ui_Arc1, 50);
 
+    lv_obj_set_style_arc_color(ui_Arc1, lv_color_hex(0xFF6666), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc1, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    ui_Checkbox1 = lv_checkbox_create(ui_Screen1);
-    lv_obj_set_width(ui_Checkbox1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Checkbox1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Checkbox1, -22);
-    lv_obj_set_y(ui_Checkbox1, -160);
-    lv_obj_set_align(ui_Checkbox1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Checkbox1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    ui_Label2 = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_Label2, LV_SIZE_CONTENT);   /// 5
+    lv_obj_set_height(ui_Label2, LV_SIZE_CONTENT);    /// 5
+    lv_obj_set_x(ui_Label2, -100);
+    lv_obj_set_y(ui_Label2, -100);
+    lv_obj_set_align(ui_Label2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label2, "+1");
 
-    ui_Slider1 = lv_slider_create(ui_Screen1);
-    lv_slider_set_value(ui_Slider1, 0, LV_ANIM_OFF);
-    if(lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
-    lv_obj_set_width(ui_Slider1, 150);
-    lv_obj_set_height(ui_Slider1, 10);
-    lv_obj_set_x(ui_Slider1, -24);
-    lv_obj_set_y(ui_Slider1, 83);
-    lv_obj_set_align(ui_Slider1, LV_ALIGN_CENTER);
+    ui_Label3 = lv_label_create(ui_Screen1);
+    lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label3, 100);
+    lv_obj_set_y(ui_Label3, -100);
+    lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label3, "-1");
 
+    ui_Arc2 = lv_arc_create(ui_Screen1);
+    lv_obj_set_width(ui_Arc2, 90);
+    lv_obj_set_height(ui_Arc2, 90);
+    lv_obj_set_align(ui_Arc2, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc2, 50);
 
-    ui_Switch1 = lv_switch_create(ui_Screen1);
-    lv_obj_set_width(ui_Switch1, 50);
-    lv_obj_set_height(ui_Switch1, 25);
-    lv_obj_set_x(ui_Switch1, -9);
-    lv_obj_set_y(ui_Switch1, 126);
-    lv_obj_set_align(ui_Switch1, LV_ALIGN_CENTER);
+    lv_obj_set_style_arc_color(ui_Arc2, lv_color_hex(0xFFFF66), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc2, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
+    ui_Arc3 = lv_arc_create(ui_Screen1);
+    lv_obj_set_width(ui_Arc3, 130);
+    lv_obj_set_height(ui_Arc3, 130);
+    lv_obj_set_align(ui_Arc3, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc3, 50);
 
+    lv_obj_set_style_arc_color(ui_Arc3, lv_color_hex(0x99CC66), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc3, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
+    lv_obj_add_event_cb(ui_Button1, ui_event_Button1, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_Button2, ui_event_Button2, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_Screen1, ui_event_Screen1, LV_EVENT_ALL, NULL);
+    uic_Arc1 = ui_Arc1;
+    uic_Arc2 = ui_Arc2;
+    uic_Arc3 = ui_Arc3;
 
 }
