@@ -1,0 +1,11 @@
+# SquareLine Studio tool artifacts
+backup/
+cache/
+filelist.txt
+
+# Arduino build output
+build/
+.pio/
+
+# macOS
+.DS_Store
