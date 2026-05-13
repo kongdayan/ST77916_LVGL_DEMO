@@ -29,7 +29,7 @@ static void on_gesture(lv_event_t *e)
     if (dir == LV_DIR_LEFT)
         _ui_screen_change(screen_info_get_ptr(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 0, screen_info_init);
     else if (dir == LV_DIR_RIGHT)
-        _ui_screen_change(screen_about_get_ptr(), LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 0, screen_about_init);
+        _ui_screen_change(screen_agent_get_ptr(), LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 0, screen_agent_init);
 }
 
 static lv_obj_t *make_arc(lv_obj_t *parent, int size, uint32_t color)

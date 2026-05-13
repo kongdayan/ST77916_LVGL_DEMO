@@ -16,11 +16,13 @@ void screen_dashboard_init(void);
 void screen_info_init(void);
 void screen_image_init(void);
 void screen_about_init(void);
+void screen_agent_init(void);
 
 lv_obj_t **screen_dashboard_get_ptr(void);
 lv_obj_t **screen_info_get_ptr(void);
 lv_obj_t **screen_image_get_ptr(void);
 lv_obj_t **screen_about_get_ptr(void);
+lv_obj_t **screen_agent_get_ptr(void);
 
 void ui_init(void);
 
