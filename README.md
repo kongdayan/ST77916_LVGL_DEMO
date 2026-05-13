@@ -35,43 +35,40 @@ An embedded UI demo for the **ESP32-S3** driving a **ST77916 QSPI 360×360 round
 
 ```
 ST77916_LVGL_DEMO/
-├── main.cpp                    # Arduino setup() / loop() — PlatformIO entry point
-├── ST77916_LVGL_DEMO.ino       # Arduino IDE stub (delegates to main.cpp)
-├── lv_conf.h                   # LVGL feature flags
-├── platformio.ini              # PlatformIO build config
+├── main.cpp                     # Arduino setup() / loop()
+├── ST77916_LVGL_DEMO.ino        # Arduino IDE stub
+├── platformio.ini               # PlatformIO build config
+├── lv_conf.h                    # LVGL feature flags
+├── CMakeLists.txt               # Optional ESP-IDF/CMake project metadata
+├── AGENTS.md                    # Coding-agent project instructions
 │
 ├── hal/
-│   ├── display.cpp             # ST77916 + CST816S + LEDC backlight driver, LVGL init
+│   ├── display.cpp              # ST77916 + CST816S + LEDC backlight driver, LVGL init
 │   ├── display.h
-│   └── pincfg.h                # GPIO pin definitions
+│   └── pincfg.h                 # GPIO pin definitions
 │
 ├── screens/
-│   ├── screen_dashboard.c      # Concentric arc widgets + +/- buttons
-│   ├── screen_info.c           # TabView: Online / Calendar / Settings
-│   ├── screen_image.c          # Full-screen image viewer
-│   ├── screen_about.c          # Designer credit
-│   └── screen_agent.c          # Hex-Ball game (physics engine + custom draw)
+│   ├── screen_dashboard.c/.h    # Dashboard screen
+│   ├── screen_info.c/.h         # Info/settings screen
+│   ├── screen_image.c/.h        # Image screen
+│   ├── screen_about.c/.h        # About screen
+│   └── screen_agent.c/.h        # Hex-Ball game screen
 │
 ├── ui/
-│   ├── ui.c / ui.h             # Theme init, lazy screen loading, shared declarations
-│   ├── ui_helpers.c / .h       # _ui_screen_change(), _ui_arc_increment()
-│   └── ui_img_*.c              # Embedded image assets
+│   ├── ui.c / ui.h              # Theme init, lazy screen loading, shared declarations
+│   ├── ui_helpers.c / .h        # Shared LVGL helper functions
+│   └── ui_img_*.c               # Embedded image assets
 │
-└── .github/workflows/
-    └── build.yml               # CI/CD (GitHub Actions)
+├── assets/                      # Source image assets
+├── cache/                       # Generated image thumbnails/cache
+├── .claude/                     # Claude Code command references
+├── .github/workflows/           # GitHub Actions CI
+├── .vscode/                     # Editor settings
+│
+└── backup/                      # Archived legacy design exports
 ```
 
-### UI Screens
-
-Swipe left/right to navigate between screens. Screens are lazy-created on first visit.
-
-| Screen | File | Description |
-|--------|------|-------------|
-| Dashboard | `screen_dashboard.c` | Three concentric arcs (red/yellow/green), +/- long-press buttons |
-| Info | `screen_info.c` | TabView — Online (spinner), Calendar, Settings (WiFi/BT/volume) |
-| Image | `screen_image.c` | Full-screen cyberpunk image |
-| About | `screen_about.c` | "Designed By Wenyan Kong" in Montserrat 44 |
-| Agent | `screen_agent.c` | **Hex-Ball game** — touch-to-rotate hexagonal rings, bouncing ball |
+The active UI is implemented directly in LVGL C code under `screens/`. Swipe left/right to navigate between lazily-created screens.
 
 #### Hex-Ball Game (Agent screen)
 
