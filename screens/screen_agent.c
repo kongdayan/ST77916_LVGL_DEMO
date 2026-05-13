@@ -220,8 +220,8 @@ static void on_input(lv_event_t *e)
         lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
         lv_indev_wait_release(lv_indev_get_act());
         if (dir == LV_DIR_LEFT)
-            _ui_screen_change(screen_dashboard_get_ptr(),
-                              LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 0, screen_dashboard_init);
+            _ui_screen_change(screen_3dmodel_get_ptr(),
+                              LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 0, screen_3dmodel_init);
         else if (dir == LV_DIR_RIGHT)
             _ui_screen_change(screen_about_get_ptr(),
                               LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 0, screen_about_init);

@@ -7,10 +7,10 @@ static void on_gesture(lv_event_t *e)
     if (lv_event_get_code(e) != LV_EVENT_GESTURE) return;
     lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
     lv_indev_wait_release(lv_indev_get_act());
-    if (dir == LV_DIR_LEFT)
-        _ui_screen_change(screen_agent_get_ptr(), LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 0, screen_agent_init);
-    else if (dir == LV_DIR_RIGHT)
-        _ui_screen_change(screen_image_get_ptr(), LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 0, screen_image_init);
+    if (dir == LV_DIR_LEFT || dir == LV_DIR_RIGHT)
+        _ui_screen_change(screen_codex_usage_get_ptr(),
+                          dir == LV_DIR_LEFT ? LV_SCR_LOAD_ANIM_MOVE_LEFT : LV_SCR_LOAD_ANIM_MOVE_RIGHT,
+                          500, 0, screen_codex_usage_init);
 }
 
 void screen_about_init(void)

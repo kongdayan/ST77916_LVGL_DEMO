@@ -18,6 +18,6 @@ void ui_init(void)
         LV_FONT_DEFAULT);
     lv_disp_set_theme(disp, theme);
 
-    screen_dashboard_init();
-    lv_disp_load_scr(*screen_dashboard_get_ptr());
+    screen_codex_usage_init();
+    lv_disp_load_scr(*screen_codex_usage_get_ptr());
 }
