@@ -1,4 +1,4 @@
-#include "scr_st77916.h"
+#include "display.h"
 #include <esp_display_panel.hpp>
 
 using namespace esp_panel::drivers;
@@ -91,7 +91,7 @@ static lv_indev_t *indev_init(Touch *tp)
     return lv_indev_drv_register(&indev_drv_tp);
 }
 
-void scr_lvgl_init()
+void display_init()
 {
     backlight = new BacklightPWM_LEDC(TFT_BLK, true);
     backlight->begin();
