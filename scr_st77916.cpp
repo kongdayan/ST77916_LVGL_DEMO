@@ -116,7 +116,7 @@ void scr_lvgl_init()
     lcd = new LCD_ST77916(panel_bus, SCREEN_RES_HOR, SCREEN_RES_VER, 16, TFT_RST);
     lcd->begin();
     lcd->invertColor(true);
-    lcd->displayOn();
+    lcd->setDisplayOnOff(true);
 
     backlight->on();
     backlight->setBrightness(100);
