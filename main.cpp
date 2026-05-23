@@ -2,12 +2,14 @@
 #include "display.h"
 #include <lvgl.h>
 #include "ui.h"
+#include "sd_card.h"
 
 void setup()
 {
   delay(200);
   Serial.begin(115200);
   display_init();
+  sd_card_init();
   ui_init();
 }
 

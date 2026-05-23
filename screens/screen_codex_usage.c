@@ -1,5 +1,6 @@
 #include "ui.h"
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -15,6 +16,18 @@
 
 static lv_obj_t *scr = NULL;
 static lv_obj_t *panel = NULL;
+static bool light_mode = false;
+
+static uint32_t color_bg(void) { return light_mode ? 0xF8FBFF : 0x02050A; }
+static uint32_t color_ring(void) { return light_mode ? 0xD8E8FA : 0x0B254D; }
+static uint32_t color_tick(void) { return light_mode ? 0x7CAEF6 : 0x1F7AFF; }
+static uint32_t color_tick_hot(void) { return light_mode ? 0x1467F2 : 0x1684FF; }
+static uint32_t color_text(void) { return light_mode ? 0x061B4D : 0xFFFFFF; }
+static uint32_t color_reset(void) { return light_mode ? 0x16264C : 0xFFFFFF; }
+static uint32_t color_blue(void) { return light_mode ? 0x075FF0 : 0x1E9BFF; }
+static uint32_t color_blue_dim(void) { return light_mode ? 0xD8E7F8 : 0x17446D; }
+static uint32_t color_green(void) { return light_mode ? 0x2BA70E : 0x70F52A; }
+static uint32_t color_green_dim(void) { return light_mode ? 0xDCEED5 : 0x315C43; }
 
 static void on_gesture(lv_event_t *e)
 {
@@ -22,10 +35,15 @@ static void on_gesture(lv_event_t *e)
     lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
     lv_indev_wait_release(lv_indev_get_act());
 
+    if (dir == LV_DIR_TOP || dir == LV_DIR_BOTTOM) {
+        light_mode = !light_mode;
+        if (panel) lv_obj_invalidate(panel);
+        return;
+    }
+
     if (dir == LV_DIR_LEFT || dir == LV_DIR_RIGHT)
         _ui_screen_change(screen_about_get_ptr(),
-                          dir == LV_DIR_LEFT ? LV_SCR_LOAD_ANIM_MOVE_LEFT : LV_SCR_LOAD_ANIM_MOVE_RIGHT,
-                          500, 0, screen_about_init);
+                          LV_SCR_LOAD_ANIM_NONE, 0, 0, screen_about_init);
 }
 
 static void draw_dot(lv_draw_ctx_t *dc, int x, int y, int r, uint32_t color, lv_opa_t opa)
@@ -199,13 +217,13 @@ static void draw_outer_ticks(lv_draw_ctx_t *dc)
         float rad = deg * PI_F / 180.0f;
         int x = CX + (int)(171.0f * cosf(rad));
         int y = CY + (int)(171.0f * sinf(rad));
-        draw_dot(dc, x, y, 1, 0x1F7AFF, LV_OPA_70);
+        draw_dot(dc, x, y, 1, color_tick(), light_mode ? LV_OPA_50 : LV_OPA_70);
     }
 
-    draw_line(dc, 178, 5, 182, 5, 5, 0x1684FF, LV_OPA_COVER);
-    draw_line(dc, 178, 355, 182, 355, 5, 0x1684FF, LV_OPA_COVER);
-    draw_line(dc, 5, 180, 9, 180, 5, 0x1684FF, LV_OPA_COVER);
-    draw_line(dc, 351, 180, 355, 180, 5, 0x1684FF, LV_OPA_COVER);
+    draw_line(dc, 178, 5, 182, 5, 5, color_tick_hot(), LV_OPA_COVER);
+    draw_line(dc, 178, 355, 182, 355, 5, color_tick_hot(), LV_OPA_COVER);
+    draw_line(dc, 5, 180, 9, 180, 5, color_tick_hot(), LV_OPA_COVER);
+    draw_line(dc, 351, 180, 355, 180, 5, color_tick_hot(), LV_OPA_COVER);
 }
 
 static void draw_label_text(lv_draw_ctx_t *dc, const char *text, int x, int y,
@@ -226,13 +244,13 @@ static void draw_clock_icon(lv_draw_ctx_t *dc, int x, int y)
     lv_point_t center = { x, y };
     lv_draw_arc_dsc_t dsc;
     lv_draw_arc_dsc_init(&dsc);
-    dsc.color = lv_color_hex(0xFFFFFF);
+    dsc.color = lv_color_hex(color_reset());
     dsc.opa = LV_OPA_COVER;
     dsc.width = 2;
     dsc.rounded = 1;
     lv_draw_arc(dc, &dsc, &center, 7, 0, 360);
-    draw_line(dc, x, y, x, y - 5, 2, 0xFFFFFF, LV_OPA_COVER);
-    draw_line(dc, x, y, x + 4, y + 2, 2, 0xFFFFFF, LV_OPA_COVER);
+    draw_line(dc, x, y, x, y - 5, 2, color_reset(), LV_OPA_COVER);
+    draw_line(dc, x, y, x + 4, y + 2, 2, color_reset(), LV_OPA_COVER);
 }
 
 static void draw_centered_reset(lv_draw_ctx_t *dc, const char *text, int y)
@@ -241,7 +259,7 @@ static void draw_centered_reset(lv_draw_ctx_t *dc, const char *text, int y)
 
     lv_draw_label_dsc_t dsc;
     lv_draw_label_dsc_init(&dsc);
-    dsc.color = lv_color_hex(0xFFFFFF);
+    dsc.color = lv_color_hex(color_reset());
     dsc.opa = LV_OPA_COVER;
     dsc.font = &lv_font_montserrat_16;
     dsc.align = LV_TEXT_ALIGN_LEFT;
@@ -298,48 +316,48 @@ static void on_draw(lv_event_t *e)
     if (lv_event_get_code(e) != LV_EVENT_DRAW_POST_BEGIN) return;
     lv_draw_ctx_t *dc = lv_event_get_draw_ctx(e);
 
-    draw_rect(dc, 0, 0, 359, 359, LV_RADIUS_CIRCLE, 0x02050A, LV_OPA_COVER);
+    draw_rect(dc, 0, 0, 359, 359, LV_RADIUS_CIRCLE, color_bg(), LV_OPA_COVER);
 
     lv_point_t center = { CX, CY };
     lv_draw_arc_dsc_t ring;
     lv_draw_arc_dsc_init(&ring);
-    ring.color = lv_color_hex(0x0B254D);
+    ring.color = lv_color_hex(color_ring());
     ring.opa = LV_OPA_COVER;
     ring.width = 7;
     ring.rounded = 1;
     lv_draw_arc(dc, &ring, &center, 180, 0, 360);
 
     draw_outer_ticks(dc);
-    draw_dotted_hline(dc, 40, 320, 102, 0x1F7AFF, LV_OPA_70);
-    draw_dotted_hline(dc, 28, 332, 203, 0x1F7AFF, LV_OPA_70);
-    draw_dotted_hline(dc, 82, 292, 292, 0x1F7AFF, LV_OPA_70);
+    draw_dotted_hline(dc, 40, 320, 102, color_tick(), light_mode ? LV_OPA_40 : LV_OPA_70);
+    draw_dotted_hline(dc, 28, 332, 203, color_tick(), light_mode ? LV_OPA_40 : LV_OPA_70);
+    draw_dotted_hline(dc, 82, 292, 292, color_tick(), light_mode ? LV_OPA_40 : LV_OPA_70);
 
     draw_codex_mark(dc);
-    draw_dot_text(dc, "CODEX", 146, 55, 4, 1, 0xFFFFFF, LV_OPA_COVER);
+    draw_dot_text(dc, "CODEX", 146, 55, 4, 1, color_text(), LV_OPA_COVER);
 
-    draw_dot_text(dc, "CURRENT", 45, 122, 2, 1, 0x1E9BFF, LV_OPA_COVER);
-    draw_right_percent(dc, CURRENT_PCT, 319, 116, 0x1E9BFF, LV_OPA_COVER);
+    draw_dot_text(dc, "CURRENT", 45, 122, 2, 1, color_blue(), LV_OPA_COVER);
+    draw_right_percent(dc, CURRENT_PCT, 319, 116, color_blue(), LV_OPA_COVER);
     draw_progress_dots(dc, 48, 156, PROGRESS_DOTS,
                        (PROGRESS_DOTS * CURRENT_PCT + 50) / 100, 2,
-                       0x1E9BFF, 0x17446D);
+                       color_blue(), color_blue_dim());
     draw_centered_reset(dc, "Resets in 21:59", 180);
 
-    draw_dot_text(dc, "WEEKLY", 45, 221, 2, 1, 0x70F52A, LV_OPA_COVER);
-    draw_right_percent(dc, WEEKLY_PCT, 319, 217, 0x70F52A, LV_OPA_COVER);
+    draw_dot_text(dc, "WEEKLY", 45, 221, 2, 1, color_green(), LV_OPA_COVER);
+    draw_right_percent(dc, WEEKLY_PCT, 319, 217, color_green(), LV_OPA_COVER);
     draw_progress_dots(dc, 48, 248, PROGRESS_DOTS,
                        (PROGRESS_DOTS * WEEKLY_PCT + 50) / 100, 1,
-                       0x70F52A, 0x315C43);
+                       color_green(), color_green_dim());
     draw_centered_reset(dc, "Resets 16:14 on 18 May", 266);
 
-    draw_dot(dc, 100, 307, 3, 0x70F52A, LV_OPA_COVER);
-    draw_dot_text(dc, "AGENT ACTIVE", 115, 300, 2, 1, 0x70F52A, LV_OPA_COVER);
+    draw_dot(dc, 100, 307, 3, color_green(), LV_OPA_COVER);
+    draw_dot_text(dc, "AGENT ACTIVE", 115, 300, 2, 1, color_green(), LV_OPA_COVER);
 }
 
 void screen_codex_usage_init(void)
 {
     scr = lv_obj_create(NULL);
     lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(scr, lv_color_hex(0x02050A), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(scr, lv_color_hex(color_bg()), LV_PART_MAIN);
     lv_obj_add_event_cb(scr, on_gesture, LV_EVENT_ALL, NULL);
 
     panel = lv_obj_create(scr);

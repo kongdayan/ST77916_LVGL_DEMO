@@ -13,6 +13,7 @@ An embedded UI demo for the **ESP32-S3** driving a **ST77916 QSPI 360×360 round
 | MCU | ESP32-S3 (DevKitC-1, 16 MB flash, 8 MB PSRAM) |
 | Display | ST77916 · 360×360 · QSPI 4-line |
 | Touch | CST816S · I2C |
+| TF card | SD_MMC 4-bit |
 | Backlight | PWM via LEDC |
 
 ### Pin Configuration (`hal/pincfg.h`)
@@ -28,6 +29,9 @@ An embedded UI demo for the **ESP32-S3** driving a **ST77916 QSPI 360×360 round
 | Touch SDA | 7 |
 | Touch INT | 41 |
 | Touch RST | 40 |
+| SD D0-D3 | 2 / 1 / 6 / 5 |
+| SD CLK | 3 |
+| SD CMD | 4 |
 
 ---
 
@@ -69,6 +73,19 @@ ST77916_LVGL_DEMO/
 ```
 
 The active UI is implemented directly in LVGL C code under `screens/`. Swipe left/right to navigate between lazily-created screens.
+
+#### TF Card Video Screen
+
+The video screen mounts the TF card at `/sdcard` and plays `/sdcard/video.rgb`.
+The file is a raw stream of consecutive `360×360` RGB565 frames, with each frame
+exactly `259200` bytes. Playback is scheduled at 42 ms per frame, about 24 FPS,
+and loops back to the beginning at EOF.
+
+Convert an MP4 to the expected raw format with:
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=360:360,fps=24" -pix_fmt rgb565be -f rawvideo video.rgb
+```
 
 #### Hex-Ball Game (Agent screen)
 
