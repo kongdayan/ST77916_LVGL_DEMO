@@ -48,12 +48,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ------------------------------------------------------------------ #
-  # Job 3: Build firmware and report flash / RAM usage                  #
-  # Results are posted to the Actions step summary                      #
+  # Job 3: Build firmware, report flash / RAM usage, and post PR comment#
+  # Re-runs update the existing comment instead of creating a new one   #
   # ------------------------------------------------------------------ #
   firmware-size:
     name: Firmware Size Report
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -79,26 +81,67 @@ jobs:
       - name: Build firmware
         run: pio run 2>&1 | tee build.log
 
-      - name: Report firmware size
+      - name: Prepare size report
         run: |
+          SIZE_LINES=$(grep -E "(RAM:|Flash:)" build.log || echo "Size info not available")
+
+          BIN_SIZE="N/A"
+          if [ -f .pio/build/esp32s3/firmware.bin ]; then
+            BIN_BYTES=$(wc -c < .pio/build/esp32s3/firmware.bin)
+            BIN_KB=$(awk "BEGIN {printf \"%.1f\", $BIN_BYTES/1024}")
+            BIN_SIZE="${BIN_KB} KB (${BIN_BYTES} bytes)"
+          fi
+
           {
-            echo "## Firmware Size Report"
-            echo ""
-            echo "### Memory Usage"
-            echo '```'
-            grep -E "(RAM:|Flash:|Memory Usage|DATA:|BSS:|TEXT:)" build.log || echo "(size info not found in build log)"
-            echo '```'
-            echo ""
-            echo "### Binary files"
-            echo "| File | Size |"
-            echo "|------|------|"
-            for f in .pio/build/esp32s3/firmware.bin .pio/build/esp32s3/firmware.elf; do
-              if [ -f "$f" ]; then
-                SIZE=$(du -sh "$f" | cut -f1)
-                echo "| \`$f\` | $SIZE |"
-              fi
-            done
-          } >> "$GITHUB_STEP_SUMMARY"
+            printf '<!-- firmware-size-report -->\n'
+            printf '## Firmware Size Report\n\n'
+            printf '**Memory Usage**\n'
+            printf '```\n'
+            printf '%s\n' "$SIZE_LINES"
+            printf '```\n\n'
+            printf '| File | Size |\n'
+            printf '|------|------|\n'
+            printf '| `firmware.bin` | %s |\n' "$BIN_SIZE"
+            printf '\n> Artifact available for 7 days · [View full run](%s/%s/actions/runs/%s)\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+          } > size_comment.md
+
+      - name: Update step summary
+        run: cat size_comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post or update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('size_comment.md', 'utf8');
+            const marker = '<!-- firmware-size-report -->';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info(`Updated existing comment ${existing.id}`);
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+              core.info('Created new comment');
+            }
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
