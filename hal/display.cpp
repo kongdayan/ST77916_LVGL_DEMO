@@ -1,11 +1,9 @@
 #include "display.h"
-#include <Arduino.h>
 #include <esp_display_panel.hpp>
 
 using namespace esp_panel::drivers;
 
 #define TFT_SPI_FREQ_HZ (50 * 1000 * 1000)
-#define SCREEN_IDLE_TIMEOUT_MS (30 * 1000UL)
 
 static lv_color_t        *disp_draw_buf;
 static lv_disp_draw_buf_t draw_buf;
@@ -14,21 +12,19 @@ static lv_indev_t        *indev_touchpad;
 static BacklightPWM_LEDC *backlight = nullptr;
 static LCD               *lcd       = nullptr;
 static Touch             *touch     = nullptr;
-static uint32_t           last_touch_ms = 0;
-static bool               screen_on = true;
 
 static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
-    LCD *panel = static_cast<LCD *>(disp->user_data);
+    LCD *panel = (LCD *)disp->user_data;
     panel->drawBitmap(area->x1, area->y1,
                       area->x2 - area->x1 + 1,
                       area->y2 - area->y1 + 1,
-                      reinterpret_cast<const uint8_t *>(color_p));
+                      (const uint8_t *)color_p);
 }
 
 IRAM_ATTR bool onDrawBitmapFinishCallback(void *user_data)
 {
-    lv_disp_drv_t *drv = static_cast<lv_disp_drv_t *>(user_data);
+    lv_disp_drv_t *drv = (lv_disp_drv_t *)user_data;
     lv_disp_flush_ready(drv);
     return false;
 }
@@ -59,14 +55,7 @@ void setRotation(uint8_t rot)
 void screen_switch(bool on)
 {
     if (backlight == nullptr) return;
-    if (on) {
-        backlight->on();
-        screen_on = true;
-        last_touch_ms = millis();
-    } else {
-        backlight->off();
-        screen_on = false;
-    }
+    if (on) backlight->on(); else backlight->off();
 }
 
 void set_brightness(uint8_t bri)
@@ -75,19 +64,9 @@ void set_brightness(uint8_t bri)
     backlight->setBrightness(bri);
 }
 
-void display_power_tick(void)
-{
-    if (backlight == nullptr || !screen_on) return;
-
-    uint32_t now = millis();
-    if (now - last_touch_ms >= SCREEN_IDLE_TIMEOUT_MS) {
-        screen_switch(false);
-    }
-}
-
 static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
-    Touch *tp = static_cast<Touch *>(indev_drv->user_data);
+    Touch *tp = (Touch *)indev_drv->user_data;
     TouchPoint point;
     data->state = LV_INDEV_STATE_RELEASED;
 
@@ -96,8 +75,6 @@ static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
             data->point.x = point.x;
             data->point.y = point.y;
             data->state = LV_INDEV_STATE_PRESSED;
-            last_touch_ms = millis();
-            if (!screen_on) screen_switch(true);
         }
     }
 }
@@ -110,7 +87,7 @@ static lv_indev_t *indev_init(Touch *tp)
     lv_indev_drv_init(&indev_drv_tp);
     indev_drv_tp.type      = LV_INDEV_TYPE_POINTER;
     indev_drv_tp.read_cb   = touchpad_read;
-    indev_drv_tp.user_data = static_cast<void *>(tp);
+    indev_drv_tp.user_data = (void *)tp;
     return lv_indev_drv_register(&indev_drv_tp);
 }
 
@@ -143,12 +120,10 @@ void display_init()
 
     backlight->on();
     backlight->setBrightness(100);
-    screen_on = true;
-    last_touch_ms = millis();
 
     const size_t lv_cache_rows = 72;
-    disp_draw_buf = static_cast<lv_color_t *>(heap_caps_malloc(
-        lv_cache_rows * SCREEN_RES_HOR * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT));
+    disp_draw_buf = (lv_color_t *)heap_caps_malloc(
+        lv_cache_rows * SCREEN_RES_HOR * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
 
     lv_init();
     lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, SCREEN_RES_HOR * lv_cache_rows);
@@ -158,10 +133,10 @@ void display_init()
     disp_drv.ver_res   = SCREEN_RES_VER;
     disp_drv.flush_cb  = my_disp_flush;
     disp_drv.draw_buf  = &draw_buf;
-    disp_drv.user_data = static_cast<void *>(lcd);
+    disp_drv.user_data = (void *)lcd;
     lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
-    lcd->attachDrawBitmapFinishCallback(onDrawBitmapFinishCallback, static_cast<void *>(disp->driver));
+    lcd->attachDrawBitmapFinishCallback(onDrawBitmapFinishCallback, (void *)disp->driver);
 
     indev_touchpad = indev_init(touch);
 }
